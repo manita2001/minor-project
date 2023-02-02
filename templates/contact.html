@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block body %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Contact Us</title>
+    <style>
+        /* Add some basic styling for the page */
+        .form-control {
+            width: 80%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f1f1f1;
+          }
+          
+          .container {
+            width: 80%;
+            margin: 0 auto;
+          }
+          
+          form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px #ccc;
+          }
+          
+          label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+          }
+          
+          input[type="text"],
+          textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+          }
+          
+          textarea {
+            resize: none;
+          }
+          
+          input[type="submit"] {
+            background-color: #3a3a3a;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+          }
+          
+          input[type="submit"]:hover {
+            background-color: rgb(139, 138, 138);
+          }
+          
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Contact Us</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+</body>
+
+</html>
+
+
+{% endblock body %}

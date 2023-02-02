@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock title %}
+{% block body %}
+{% load static %}
+
+<div class="container-fluid px-0">
+  <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <img src="https://www.switchscene.co.uk/wp-content/uploads/2018/12/wall9.jpg" class="d-block w-100" alt="...">
+
+        <div class="container">
+          <div class="carousel-caption text-start">
+            <h1>We Make It Easy To Buy Tickets</h1>
+            <p>Save More, Travel More - Book Now!</p>
+            <p><a class="btn btn-lg btn-primary" href="signup">Sign up today</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- here starts booking section -->
+<title>HIACE Ticket</title>
+<style>
+  /* Add some basic styling for the page */
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f2f2f2;
+  }
+
+  .container {
+    width: 60%;
+    margin: 0 auto;
+  }
+
+  /* Style the form elements */
+  form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px #ccc;
+  }
+
+  label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+  }
+
+  input[type="text"],
+  input[type="date"] {
+    width: 100%;
+    padding: 12px 20px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  input[type="submit"]:hover {
+    background-color: #45a049;
+  }
+
+  /* Style the exchange button */
+  .exchange-btn {
+    background-color: #fff;
+    color: #4CAF50;
+    border: 1px solid #4CAF50;
+    border-radius: 5px;
+    padding: 5px;
+    cursor: pointer;
+  }
+
+  .exchange-btn:hover {
+    background-color: #f2f2f2;
+  }
+
+  .list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .list-group-item span {
+    font-weight: bold;
+    margin-right: 10px;
+  }
+
+  .book-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .book-btn:hover {
+    background-color: #45a049;
+  }
+</style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>HIACE Ticket</h1>
+    <form method="post" action="">
+      {% csrf_token %}
+      <label for="source">Source:</label>
+      <input type="text" id="source" name="source">
+      <br>
+      <label for="destination">Destination:</label>
+      <input type="text" id="destination" name="destination">
+      <!-- <br>
+      <button class="exchange-btn" onclick="exchange()">Exchange</button>
+      <br> -->
+      <label for="date">Date:</label>
+      <input type="date" id="date" name="date">
+      <br>
+      <input type="submit" value="Search">
+    </form>
+
+    <script>
+      function exchange() {
+        const source = document.getElementById("source").value;
+        const destination = document.getElementById("destination").value;
+        document.getElementById("source").value = destination;
+        document.getElementById("destination").value = source;
+      }
+    </script>
+  </div>
+  <br>
+  <div class="container">
+    <h3>Popular Routs</h3>
+    <form>
+      <ul class="list-group">
+        <li class="list-group-item">
+          <span>Kathmandu to Pokhara</span>
+          <button class="book-btn">Book</button>
+        </li>
+        <br>
+        <li class="list-group-item">
+          <span>Kathmandu to Pokhara</span>
+          <button class="book-btn">Book</button>
+        </li>
+        <br>
+        <li class="list-group-item">
+          <span>Kathmandu to Pokhara</span>
+          <button class="book-btn">Book</button>
+        </li>
+        <br>
+        <li class="list-group-item">
+          <span>Kathmandu to Pokhara</span>
+          <button class="book-btn">Book</button>
+        </li>
+        </li>
+      </ul>
+    </form>
+  </div>
+</body>
+{% endblock body %}

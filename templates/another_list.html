@@ -1,0 +1,402 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block body %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>HIACE Ticket</title>
+    <style>
+        /* Add some basic styling for the page */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        /* Style the date and days slider */
+        /* .date-slider {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: #f2f2f2;
+        } */
+
+        .date-slider input[type="range"] {
+            width: 80%;
+        }
+
+        /* Style the source and destination information */
+        .source-destination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px #ccc;
+        }
+
+        /* Style the HIACE list */
+        .hiace-list {
+            padding: 20px;
+        }
+
+        .hiace-list ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .hiace-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        /* Style the information */
+        .hiace-info {
+            padding: 10px;
+        }
+
+        .hiace-info p {
+            margin: 0;
+        }
+
+        .hiace-info .time {
+            font-weight: bold;
+        }
+
+        .hiace-info .price {
+            color: #4CAF50;
+        }
+
+        .hiace-info .seats {
+            font-size: 0.8em;
+        }
+
+        .book-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 9px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .book-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* for pop up */
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 1;
+            /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            /* Full width */
+            height: 100%;
+            /* Full height */
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0);
+            /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            /* Could be more or less, depending on screen size */
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* for pop up contains */
+        .hiace-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .row {
+            display: flex;
+            justify-content: center;
+        }
+
+        .row1 {
+            display: flex;
+            margin: 1px;
+            justify-content: center;
+        }
+
+        .seat {
+            height: 40px;
+            width: 60px;
+            background-color: rgb(229, 241, 202);
+            margin: 5px;
+            border-radius: 4px;
+        }
+
+        .seat.selected {
+            background-color: #6feaf6;
+        }
+
+        .seat.occupied {
+            background-color: rgb(179, 180, 176);
+        }
+
+        .seat:not(.occupied):hover {
+            cursor: pointer;
+            transform: scale(1.2);
+        }
+
+        .showcase {
+            padding: 100px 10px;
+            border-radius: 5px;
+            color: #777;
+            list-style: none;
+            display: flex;
+            justify-content: center;
+        }
+
+        #myModal {
+            width: 800px;
+            height: some-height;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <ul>
+            {% for hiace in hiace_list %}
+            <li>
+                <div class="source-destination">
+                    <p class="source">Source: {{ hiace.source }}</p>
+                    <p class="destination">Destination: {{ hiace.dest }}</p>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="hiace-info">
+                            <p class="name">{{ hiace.hiace_name }} | ID: {{hiace.id }}</p>
+                            <p class="date">Date: {{ hiace.date }}</p>
+                            <p class="time">Time: {{ hiace.time }}</p>
+                            <p class="price">Rs: {{ hiace.price }}</p>
+                            <p class="seats">Available Seats: {{ hiace.rem }} / Total Seats: {{hiace.nos}}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <form action="{% url 'bookings' %}" method="post">
+                            {% csrf_token %}
+                            <fieldset class="form-group">
+                                <legend class="border-bottom">Please enter ID and Choose seats befor booking</legend>
+                                {{ form|crispy }}
+                            </fieldset>
+                            <div>
+                                <input name='hiace_id' class="form-control" type="number" id="example-email-input" placeholder="Enter ID of the hiace to Book">
+                            </div>
+                            <!-- <div class="form-group">
+                                <input class="form-control" id="name_seats" name="name_seats" type="text"
+                                    placeholder="Enter No of Seats to Book Here">
+                            </div>  -->
+
+                            <div class="form-group">
+                                <button id="popup" class="btn btn-outline-info">Choose seats</button>
+                                <button class="btn btn-outline-info" type="submit">Book</button>
+                            </div>
+
+                            <div id="myModal" class="modal">
+                                <div class="modal-content">
+                                    <span class="close">&times;</span>
+                                    <p>
+                                    <div class="hiace-container">
+                                        <div class="row">
+                                            <div class="seat" data-seat="A">A</div>
+                                            <div class="seat" data-seat="B">B</div>
+                                            <div class="seat occupied">Driver</div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="seat">1a</div>
+                                            <div class="seat">2a</div>
+                                            <div class="seat">3a</div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="seat">4b</div>
+                                            <div class="seat">5b</div>
+                                            <div class="seat">6b</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="seat">7c</div>
+                                            <div class="seat">8c</div>
+                                            <div class="seat">9c</div>
+                                        </div>
+                                        <div class="row1">
+                                            <div class="seat">10d</div>
+                                            <div class="seat">11d</div>
+                                            <div class="seat">12d</div>
+                                            <div class="seat">13d</div>
+
+                                        </div>
+                                    </div>
+                                    <ul class="showcase">
+                                        <li>
+                                            <div class="seat"></div>
+                                            <small>N/A</small>
+                                        </li>
+                                        <li>
+                                            <div class="seat occupied"></div>
+                                            <small>Occupied</small>
+                                        </li>
+                                        <li>
+                                            <div class="seat selected"></div>
+                                            <small>Selected</small>
+                                        </li>
+                                    </ul>
+                                    <div class="form-group">
+                                        <label for="no_seats">Number of seats:</label>
+                                        <input c id="no_seats" name="no_seats" class="form-control" readonly>
+                                        <label for="name_seats">Name of Seats:</label>
+                                        <input type="text" id="name_seats" name="name_seats" class="form-control"
+                                            readonly>
+                                    </div>
+                                    </p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+</body>
+<script>
+    document.getElementById("popup").addEventListener("click", function (event) {
+        event.preventDefault();
+        // code for selecting seats here
+    });
+    // Get the modal
+    var modal = document.getElementById("myModal");
+
+    // Get the button that opens the modal
+    var btn = document.getElementById("popup");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks the button, open the modal 
+    btn.onclick = function () {
+        modal.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+    // modal.style.width = "800px"; // or any other desired width
+
+    // //    for adding seats 
+    // let no_seats = 0;
+
+    // // Bind click event to each seat
+    // let seats = document.querySelectorAll(".seat");
+    // seats.forEach(function (seat) {
+    //     seat.addEventListener("click", function () {
+    //         if (!seat.classList.contains("occupied")) {
+    //             if (seat.classList.contains("selected")) {
+    //                 seat.classList.remove("selected");
+    //                 no_seats--;
+    //             } else {
+    //                 seat.classList.add("selected");
+    //                 no_seats++;
+    //             }
+    //         }
+    //         document.querySelector("input[name='no_seats']").value = no_seats;
+    //     });
+    // });
+
+    // // Bind click event to the book button
+    // document.querySelector("#book-btn").addEventListener("click", function () {
+    //     seats.forEach(function (seat) {
+    //         if (seat.classList.contains("selected")) {
+    //             seat.classList.remove("selected");
+    //             seat.classList.add("occupied");
+    //         }
+    //     });
+    // });
+    // name of selected seats
+    const seats = document.querySelectorAll('.seat');
+    const noSeatsField = document.querySelector('#no_seats');
+    const nameSeatsField = document.querySelector('#name_seats');
+    let selectedSeats = [];
+    let selectedSeatsNames = [];
+
+    seats.forEach(seat => {
+        seat.addEventListener('click', e => {
+            if (!e.target.classList.contains('selected')) {
+                e.target.classList.add('selected');
+                selectedSeats.push(e.target.textContent);
+                selectedSeatsNames.push(e.target.textContent);
+                noSeatsField.value = selectedSeats.length;
+                nameSeatsField.value = selectedSeatsNames.join(', ');
+            } else {
+                e.target.classList.remove('selected');
+                selectedSeats = selectedSeats.filter(
+                    selectedSeat => selectedSeat !== e.target.textContent
+                );
+                selectedSeatsNames = selectedSeatsNames.filter(
+                    selectedSeatName => selectedSeatName !== e.target.textContent
+                );
+                noSeatsField.value = selectedSeats.length;
+                nameSeatsField.value = selectedSeatsNames.join(', ');
+            }
+        });
+    });
+</script>
+
+</html>
+{% endblock body %}
